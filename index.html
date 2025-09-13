@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portafolio - Diseñador Sonoro</title>
+
+  <!-- Fuente futurista para títulos -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
+  <!-- Fuente Roboto para cuerpo -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+
+  <!-- Archivo CSS -->
+  <link rel="stylesheet" href="css/styles.css">
+
+  <!-- Librerías externas -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.39/Tone.min.js"></script>
+</head>
+<body>
+  <!-- Contenedor principal -->
+  <div class="container">
+    <!-- Foto de perfil -->
+    <div class="foto"></div>
+
+    <!-- Nombre -->
+    <h1 class="nombre">Gerardo García</h1>
+
+    <!-- Bio corta -->
+    <p class="bio"> 
+        Soy Gerardo García, un apasionado diseñador sonoro y productor musical enfocado en la cinematografía y los videojuegos, me interesa explorar y transmitir el valor que tiene el sonido en las obras audiovisuales, volviéndolas más inmersivas, reales y cautivadoras. En cuanto a la producción y composición, mi trabajo va más orientado hacia la composición de bandas sonoras para obras audiovisuales, aunque también tengo un proyecto personal de música electrónica, más específicamente de future bass y dubstep melódico, en el que busco transmitir y expresar el cariño que tengo a dichos géneros.
+    </p>
+
+    <!-- Botón interactivo -->
+    <button id="actionBtn">Escuchar Proyecto</button>
+
+    <!-- Barra de redes sociales -->
+    <div class="social-bar">
+      <a href="#" class="social-btn">🎵</a>
+      <a href="#" class="social-btn">📷</a>
+      <a href="#" class="social-btn">💻</a>
+    </div>
+  </div>
+
+  <!-- Script principal -->
+  <script>
+    // ====== Partículas con p5.js ====== //
+    let particles = [];
+
+    function setup() {
+      let canvas = createCanvas(windowWidth, windowHeight);
+      canvas.position(0, 0);
+      canvas.style('z-index', '-1'); // Para que quede detrás de todo
+      noStroke();
+    }
+
+    function draw() {
+      background(0); // Fondo negro
+
+      // Crear partículas aleatorias
+      if (frameCount % 20 === 0) {
+        particles.push(new Particle(random(width), random(height)));
+      }
+
+      // Crear partículas donde está el mouse
+      if (mouseIsPressed || (mouseX > 0 && mouseY > 0)) {
+        for (let i = 0; i < 2; i++) { // varias partículas por frame
+          particles.push(new Particle(mouseX + random(-10,10), mouseY + random(-10,10)));
+        }
+      }
+
+      // Mostrar y actualizar partículas
+      for (let i = particles.length - 1; i >= 0; i--) {
+        particles[i].update();
+        particles[i].show();
+        if (particles[i].alpha <= 0) {
+          particles.splice(i, 1);
+        }
+      }
+    }
+
+    class Particle {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.size = random(2, 6);
+        this.alpha = 255;
+        this.speedX = random(-1, 1);
+        this.speedY = random(-1, 1);
+      }
+
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        this.alpha -= 2;
+      }
+
+      show() {
+        fill(0, 255, 255, this.alpha); // Naranja con transparencia
+        ellipse(this.x, this.y, this.size);
+      }
+    }
+
+    function windowResized() {
+      resizeCanvas(windowWidth, windowHeight);
+    }
+
+    // ====== Interactividad con Tone.js ====== //
+    const actionBtn = document.getElementById("actionBtn");
+    const player = new Tone.Player("audio/demo.mp3").toDestination();
+
+    actionBtn.addEventListener("click", async () => {
+      await Tone.start(); // Necesario por políticas de navegador
+      if (player.state === "started") {
+        player.stop();
+        actionBtn.textContent = "Escuchar Proyecto";
+      } else {
+        player.start();
+        actionBtn.textContent = "Detener Demo";
+      }
+    });
+  </script>
+</body>
+</html>
